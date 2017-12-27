@@ -2,6 +2,7 @@ import os
 import pdb
 import sys
 import json
+import time
 import boto3
 
 # ARGS:
@@ -24,16 +25,25 @@ if len(sys.argv) == 5:
 else:
     acl = "public-read"
 
-f = open(file_path, "r")
-
+# boto3.set_stream_logger('')
 s3 = boto3.client("s3")
+
+print("Replacing object: {}".format(file_path))
+response = s3.delete_object(
+                            Bucket=bucket,
+                            Key=key
+                            )
+print(json.dumps(response, indent=4))
+
+time.sleep(0.5)
 response = s3.put_object(
                             ACL=acl,
-                            Body=f,
+                            Body=file_path,
                             Bucket=bucket,
                             Key=key
                         )
 
-f.close()
+print(json.dumps(response, indent=4))
+print("\n")
 
-print(json.dumps(response))
+time.sleep(0.5)
